@@ -55,6 +55,12 @@ class LaptopMapper {
         return laptop;
     }
 
+    async subLaptopById(laptopId) {
+        const db = await getDatabase();
+        const subbedLaptop = await db.collection('Laptops').find({_id: {$all: [laptopId]}});
+        return;
+    }
+
     async createLaptop(Make, modelName, modelNumber, cpu, gpu, ram, storage) {
         const db = await getDatabase();
         const newLaptop = (Make, modelName, modelNumber, cpu, gpu, ram, storage);
@@ -104,6 +110,12 @@ class DesktopMapper {
         console.log("Desktop stats", newDesktop);
         return;
 
+    }
+
+     async subDesktopById(desktopId) {
+        const db = await getDatabase();
+        const subbedDesktop = await db.collection('Desktops').find({_id: {$all: [desktopId]}});
+        return; 
     }
 
     async updateDesktopById(desktopId, Make, modelName, modelNumber, cpu, gpu, ram, stroage) {

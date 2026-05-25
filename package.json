@@ -1,5 +1,23 @@
 {
   "dependencies": {
+    "express": "^5.2.1",
     "mongodb": "^7.2.0"
-  }
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "computereval",
+  "description": "",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gmaggio03/Computer-Evaluator.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gmaggio03/Computer-Evaluator/issues"
+  },
+  "homepage": "https://github.com/gmaggio03/Computer-Evaluator#readme"
 }
