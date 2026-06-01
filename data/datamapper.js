@@ -2,6 +2,9 @@
 // the controller calls this file and then the mapper passes the information to the model
 const DataBaseSingleton = require('../config/databaseSingleton');
 const { ObjectId } = require('mongodb');
+const { desktopModel } = require('../Models/desktopModel');
+const { laptopModel } = require('../Models/laptopModel');
+const { userModel } = require('../Models/userModel');
 
 async function getDatabase() {
     return await DataBaseSingleton.getInstance();
@@ -18,10 +21,16 @@ class UserMapper {
     async createUser(username, password) {
         const db = await getDatabase();
         const user = (username, password);
-        const result = await db.collection('Users').insertOne(user);
-        console.log("inserted user with Id", result.insertedId);
-        console.log("user data", user);
-        return
+        if (!userModel.userIsUnique(userId, username)) {
+            console.log("User already exists in database");
+            return;
+        }
+        else {
+            const result = await db.collection('Users').insertOne(user);
+            console.log("inserted user with Id", result.insertedId);
+            console.log("user data", user);
+            return
+        }
     }
 
     async updateUser(userId, username, password) {
@@ -46,7 +55,8 @@ module.exports = UserMapper;
 class LaptopMapper {
     async getLaptops() {
         const db = await getDatabase();
-
+        const laptops = await db.collection('Laptops').find().toArray({});
+        return laptops;
     }
 
     async getLaptopByID(laptopId) {
@@ -57,17 +67,30 @@ class LaptopMapper {
 
     async subLaptopById(laptopId) {
         const db = await getDatabase();
-        const subbedLaptop = await db.collection('Laptops').find({_id: {$all: [laptopId]}});
-        return;
+        if (!laptopModel.laptopIsSubscribed(laptopId, userId)) {
+            console.log("Laptop is already subscribed to user");
+            return;
+        }
+        else {
+            const subbedLaptop = await db.collection('SubscribedLaptops').insertOne({_id: laptopId, userId: userId });
+            console.log("laptop subscribed to user with Id", subbedLaptop.insertedId);
+            return;
+        }
     }
 
     async createLaptop(Make, modelName, modelNumber, cpu, gpu, ram, storage) {
         const db = await getDatabase();
         const newLaptop = (Make, modelName, modelNumber, cpu, gpu, ram, storage);
-        const result = await db.collection('Laptops').insertOne(newLaptop);
-        console.log("new laptop inserted with Id", result.insertedId);
-        console.log("laptop stats", newLaptop);
-        return;
+        if (!laptopModel.laptopIsUnique(laptopId, Make, modelName, modelNumber)) {
+            console.log("Laptop already exists in database");
+            return;
+        }
+        else {
+            const result = await db.collection('Laptops').insertOne(newLaptop);
+            console.log("new laptop inserted with Id", result.insertedId);
+            console.log("laptop stats", newLaptop);
+            return;
+        }
 
     }
 
@@ -93,7 +116,8 @@ module.exports = LaptopMapper;
 class DesktopMapper {
     async getDesktops() {
         const db = await getDatabase();
-
+        const desktops = await db.collection('Desktops').find().toArray({});
+        return desktops;
     }
 
     async getDesktopById(desktopId) {
@@ -105,24 +129,39 @@ class DesktopMapper {
     async createDesktop(Make, modelName, modelNumber, cpu, gpu, ram, storage) {
         const db = await getDatabase();
         const newDesktop = (Make, modelName, modelNumber, cpu, gpu, ram, storage);
-        const result = await db.collection('Desktops').insertOne(newDesktop);
-        console.log("new desktop inserted with Id", result.insertedId);
-        console.log("Desktop stats", newDesktop);
-        return;
+        
+        if (!desktopModel.desktopIsUnique(desktopId, Make, modelName, modelNumber)) {
+            console.log("Desktop already exists in database");
+            return;
+        }
+        else {
+            const result = await db.collection('Desktops').insertOne(newDesktop);
+            console.log("new desktop inserted with Id", result.insertedId);
+            console.log("Desktop stats", newDesktop);
+            return;
+        }
 
     }
 
-     async subDesktopById(desktopId) {
+     async subDesktopById(desktopId, userId) {
         const db = await getDatabase();
-        const subbedDesktop = await db.collection('Desktops').find({_id: {$all: [desktopId]}});
-        return; 
+        if (!desktopModel.desktopIsSubscribed(desktopId, userId)) {
+            console.log("Desktop is already subscribed to user");
+            return;
+        }
+        else {
+            const subbedDesktop = await db.collection('SubscribedDesktops').insertOne({_id: desktopId, userId: userId});
+            console.log("Desktop subscribed to user with Id", subbedDesktop.insertedId);
+            return;
+        }
+        
     }
 
-    async updateDesktopById(desktopId, Make, modelName, modelNumber, cpu, gpu, ram, stroage) {
+    async updateDesktopById(desktopId, Make, modelName, modelNumber, cpu, gpu, ram, storage) {
         const db = await getDatabase();
         await db.collection('Desktops').updateOne({_id: desktopId}, 
             {
-                $set:{'Make': Make, 'ModelName': modelName, 'ModelNumber': modelNumber, 'CPU': cpu, 'GPU': gpu, 'RAM': ram, 'Storage': stroage},
+                $set:{'Make': Make, 'ModelName': modelName, 'ModelNumber': modelNumber, 'CPU': cpu, 'GPU': gpu, 'RAM': ram, 'Storage': storage},
                 $currentDate:{lastModified: true},
             }
         );

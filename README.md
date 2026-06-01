@@ -1,4 +1,4 @@
-# Computer Evaluator
+# Athena
 This is a mongodb project that I started mainly to practice design patterns. This app will take two computers that are listed or added to the database and compare them to tell the user which one is faster. 
 
 #Patterns that have been implemented.
