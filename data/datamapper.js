@@ -10,7 +10,7 @@ async function getDatabase() {
     return await DataBaseSingleton.getInstance();
 }
 
-class UserMapper {
+class DataMapper {
     
     async getUserById(userId) {
         const db = await getDatabase();
@@ -49,10 +49,7 @@ class UserMapper {
         await db.collection('Users').deleteOne({_id: userId});
         return;
     }
-}
-module.exports = UserMapper;
 
-class LaptopMapper {
     async getLaptops() {
         const db = await getDatabase();
         const laptops = await db.collection('Laptops').find().toArray({});
@@ -110,10 +107,7 @@ class LaptopMapper {
         await db.collection('Laptops').deleteOne({_id: laptopId});
         return;
     }
-}
-module.exports = LaptopMapper;
 
-class DesktopMapper {
     async getDesktops() {
         const db = await getDatabase();
         const desktops = await db.collection('Desktops').find().toArray({});
@@ -174,5 +168,5 @@ class DesktopMapper {
         return;
     }
 }
-module.exports = DesktopMapper;
+module.exports = DataMapper;
 
